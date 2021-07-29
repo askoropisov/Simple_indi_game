@@ -12,7 +12,7 @@ public:
 	
 	int length;
 	int height;
-	vector<vector<char>> Read_file(ifstream& in_file);                 //reading file and return DRP[][]
+	vector<vector<char>> Read_file(ifstream& in_file);                   //reading file and return DRP[][]
 	void Out_map(vector<vector<char>> DRP);
 } map;
 
