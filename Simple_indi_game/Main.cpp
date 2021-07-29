@@ -2,6 +2,7 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
+#include <conio.h>
 
 using namespace std;
 
@@ -19,7 +20,8 @@ public:
 class Player {
 public:
 	int x_pos = 0;
-	int y_pos = 0; 
+	int y_pos = 0;
+	void movement(vector<vector<char>>& DRP, int key);
 
 } player;
 
@@ -37,7 +39,6 @@ public:
 	
 };
 Artifact::Artifact(int number) : number(number) {}
-
 vector<Artifact*> artifacts;
 
 vector<vector<char>> Map::Read_file(ifstream& in_file) {                  //reading input file and create gameng map
@@ -59,6 +60,35 @@ vector<vector<char>> Map::Read_file(ifstream& in_file) {                  //read
 	}
 	
 	return DRP;
+}
+
+void Player::movement(vector<vector<char>>& DRP, int key) {
+	int temp_x = player.x_pos;
+	int temp_y = player.y_pos;
+	switch (key) {
+	case 72:
+		if (player.x_pos > 0 && DRP[player.x_pos-1][player.y_pos]!='#') {
+			player.x_pos -= 1;
+		}
+		break;
+	case 80:
+		if (player.x_pos < map.height - 1 && DRP[player.x_pos + 1][player.y_pos] != '#') {
+			player.x_pos += 1;
+		}
+		break;
+	case 75:
+		if (player.y_pos > 0 && DRP[player.x_pos][player.y_pos-1] != '#') {
+			player.y_pos -= 1;
+		}
+		break;
+	case 77:
+		if (player.y_pos < map.length - 1 && DRP[player.x_pos][player.y_pos + 1] != '#') {
+			player.y_pos += 1;
+		}
+		break;
+	}
+	DRP[temp_x][temp_y] = '.';
+	DRP[player.x_pos][player.y_pos] = 'P';
 }
 
 void Artifact::create(vector<vector<char>>& DRP) {
@@ -102,8 +132,16 @@ int main() {
 
 		art->create(DRP_symbol);
 	}
-	
 	map.Out_map(DRP_symbol);
+
+	while (true) {
+		
+		player.movement(DRP_symbol, _getch());
+		
+		map.Out_map(DRP_symbol);
+	}
+	
+	
 	
 
 	
