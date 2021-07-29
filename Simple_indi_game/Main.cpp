@@ -21,7 +21,7 @@ class Player {
 public:
 	int x_pos = 0;
 	int y_pos = 0;
-	void movement(vector<vector<char>>& DRP, int key);
+	void movement(vector<vector<char>>& DRP, int key, int trash);
 
 } player;
 
@@ -62,7 +62,7 @@ vector<vector<char>> Map::Read_file(ifstream& in_file) {                  //read
 	return DRP;
 }
 
-void Player::movement(vector<vector<char>>& DRP, int key) {
+void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
 	int temp_x = player.x_pos;
 	int temp_y = player.y_pos;
 	switch (key) {
@@ -136,8 +136,7 @@ int main() {
 
 	while (true) {
 		
-		player.movement(DRP_symbol, _getch());
-		
+		player.movement(DRP_symbol, _getch(), _getch());                             //second _getch for for the special feature of arrow processing
 		map.Out_map(DRP_symbol);
 	}
 	
