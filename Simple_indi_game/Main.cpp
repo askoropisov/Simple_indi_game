@@ -3,8 +3,12 @@
 #include <vector>
 #include <iomanip>
 #include <conio.h>
+#include <Windows.h>
+#include <stdio.h>
 
 using namespace std;
+
+HANDLE hConsole;
 
 ifstream in_file("input_medium.txt");
 
@@ -18,7 +22,7 @@ public:
 	char void_target = '.';
 	vector<vector<char>> DRP;
 
-	vector<vector<char>> Read_file(ifstream& in_file);                   //reading file and return DRP[][]
+	vector<vector<char>> Read_file(ifstream& in_file);                       //reading file and return DRP[][]
 	void out_map(vector<vector<char>> DRP);
 	void create_exit(vector<vector<char>>& DRP);
 } map;
@@ -45,23 +49,24 @@ public:
 Artifact::Artifact(int number) : number(number) {}
 vector<Artifact*> artifacts;
 
-vector<vector<char>> Map::Read_file(ifstream& in_file) {                  //reading input file and create gaming map
+vector<vector<char>> Map::Read_file(ifstream& in_file) {                      //reading input file and create gaming map
+
 	char symbol;
 	vector<vector<char>> DRP;
-	in_file >> map.length;
-	in_file >> map.height;
-	vector<char> string;
+		in_file >> map.length;
+		in_file >> map.height;
+		vector<char> string;
 
-	symbol = in_file.get();                                               //skip '\n'
-	for (int j = 0; j < map.height; j++) {                                    
-		for (int i = 0; i < map.length; i++) {                                
-			symbol = in_file.get();
-			string.push_back(symbol);
+		symbol = in_file.get();                                               //skip '\n'
+		for (int j = 0; j < map.height; j++) {
+			for (int i = 0; i < map.length; i++) {
+				symbol = in_file.get();
+				string.push_back(symbol);
+			}
+			symbol = in_file.get();                                           //skip '\n' in end string
+			DRP.push_back(string);
+			string.clear();
 		}
-		symbol = in_file.get();                                           //skip '\n' in end string
-		DRP.push_back(string);
-		string.clear();
-	}
 	in_file.close();
 	return DRP;
 }
@@ -107,7 +112,7 @@ void Artifact::create(vector<vector<char>>& DRP) {
 		if (DRP[temp_x][temp_y] == map.void_target && DRP[temp_x][temp_y] != DRP[0][0]) {
 			x_pos = temp_x;
 			y_pos = temp_y;
-			DRP[x_pos][y_pos] = '+';
+			DRP[x_pos][y_pos] = '@';
 			counter++;
 		}
 	}
@@ -116,7 +121,47 @@ void Artifact::create(vector<vector<char>>& DRP) {
 void Map::out_map(vector<vector<char>> DRP) {							
 	for (int j = 0; j < map.height; j++) {
 		for (int i = 0; i < map.length; i++) {
-			cout << setw(3) << DRP[j][i];
+			switch (DRP[j][i])
+			{
+			case '@': {
+				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsole, 4);
+				cout << setw(2) << DRP[j][i];
+				SetConsoleTextAttribute(hConsole, 7);
+				break;
+			}
+			case 'P': {
+				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsole, 2);
+				cout << setw(2) << DRP[j][i];
+				SetConsoleTextAttribute(hConsole, 7);
+				break;
+			}
+			case 'E': {
+				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsole, 5);
+				cout << setw(2) << DRP[j][i];
+				SetConsoleTextAttribute(hConsole, 7);
+				break;
+			}
+			case '#': {
+				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsole, 6);
+				cout << setw(2) << DRP[j][i];
+				SetConsoleTextAttribute(hConsole, 7);
+				break;
+			}
+			case '.': {
+				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+				SetConsoleTextAttribute(hConsole, 9);
+				cout << setw(2) << DRP[j][i];
+				SetConsoleTextAttribute(hConsole, 7);
+				break;
+			}
+			default:
+				cout << setw(2) << DRP[j][i];
+				break;
+			}
 		}
 		cout << endl;
 	}
@@ -146,14 +191,18 @@ int main() {
 		cout << "The file cannot be opened" << endl;
 		return EXIT_FAILURE;
 	}
+	else if (in_file.peek() == EOF) {
+		cout << "File empty" << endl;
+		return EXIT_FAILURE;
+	}
 	else {
-		map.DRP = map.Read_file(in_file);
+			map.DRP = map.Read_file(in_file);
 	}
 
 	map.DRP[player.x_pos][player.y_pos] = player.target;                                      //set Player 												
 	map.out_map(map.DRP);
 
-	for (int i = 0; i < 3; i++) {                                                   //create 3 object artifact
+	for (int i = 0; i < 3; i++) {                                                             //create 3 object artifact
 		Artifact* art = new Artifact(i);
 		artifacts.push_back(art);
 
@@ -163,7 +212,7 @@ int main() {
 
 	while (true) {
 
-		player.movement(map.DRP, _getch(), _getch());                                //second _getch for for the special feature of arrow processing
+		player.movement(map.DRP, _getch(), _getch());                                          //second _getch for for the special feature of arrow processing
 		for (int i = 0; i < artifacts.size(); i++) {
 			if (player.x_pos == artifacts[i]->x_pos && player.y_pos == artifacts[i]->y_pos) {
 				counter_artifacts++;
