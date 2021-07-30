@@ -8,12 +8,11 @@
 
 using namespace std;
 
-HANDLE hConsole;
 
-ifstream in_file("input_medium.txt");
 
 class Map {
 public:
+	HANDLE h_console;
 	int length;
 	int height;
 	int exit_x_pos = -10;
@@ -48,7 +47,7 @@ public:
 	~Artifact() {};
 };
 Artifact::Artifact(int number) : number(number) {}
-vector<Artifact*> artifacts;
+
 
 vector<vector<char>> Map::Read_file(ifstream& in_file) {                      //reading input file and create gaming map
 
@@ -119,45 +118,41 @@ void Artifact::create(vector<vector<char>>& DRP) {
 	}
 } 
 
-void Map::out_map(vector<vector<char>> DRP) {							
+void Map::out_map(vector<vector<char>> DRP) {
+	h_console = GetStdHandle(STD_OUTPUT_HANDLE);
 	for (int j = 0; j < map.height; j++) {
 		cout <<"                                      ";
 		for (int i = 0; i < map.length; i++) {
 			switch (DRP[j][i])
 			{
 			case '@': {
-				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				SetConsoleTextAttribute(hConsole, 4);
+				SetConsoleTextAttribute(h_console, 4);
 				cout << setw(2) << DRP[j][i];
-				SetConsoleTextAttribute(hConsole, 7);
+				SetConsoleTextAttribute(h_console, 7);
 				break;
 			}
 			case 'P': {
-				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				SetConsoleTextAttribute(hConsole, 2);
+				SetConsoleTextAttribute(h_console, 2);
 				cout << setw(2) << DRP[j][i];
-				SetConsoleTextAttribute(hConsole, 7);
+				SetConsoleTextAttribute(h_console, 7);
 				break;
 			}
 			case 'E': {
-				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				SetConsoleTextAttribute(hConsole, 5);
+				SetConsoleTextAttribute(h_console, 5);
 				cout << setw(2) << DRP[j][i];
-				SetConsoleTextAttribute(hConsole, 7);
+				SetConsoleTextAttribute(h_console, 7);
 				break;
 			}
 			case '#': {
-				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				SetConsoleTextAttribute(hConsole, 6);
+				SetConsoleTextAttribute(h_console, 6);
 				cout << setw(2) << DRP[j][i];
-				SetConsoleTextAttribute(hConsole, 7);
+				SetConsoleTextAttribute(h_console, 7);
 				break;
 			}
 			case '.': {
-				hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-				SetConsoleTextAttribute(hConsole, 9);
+				SetConsoleTextAttribute(h_console, 9);
 				cout << setw(2) << DRP[j][i];
-				SetConsoleTextAttribute(hConsole, 7);
+				SetConsoleTextAttribute(h_console, 7);
 				break;
 			}
 			default:
@@ -188,7 +183,11 @@ void Map::create_exit(vector<vector<char>>& DRP) {
 
 
 int main() {
+
+	ifstream in_file("input_medium.txt");
+	vector<Artifact*> artifacts;
 	int counter_artifacts = 0;
+
 	if (!in_file.is_open()) {
 		cout << "The file cannot be opened" << endl;
 		return EXIT_FAILURE;
@@ -231,11 +230,10 @@ int main() {
 		}
 
 		if (player.x_pos == map.exit_x_pos && player.y_pos == map.exit_y_pos) {
-			hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-			SetConsoleTextAttribute(hConsole, 5);
+			SetConsoleTextAttribute(map.h_console, 5);
 			cout << endl << endl << endl << endl << endl << endl << setw(62) << "YOU WIN!"
 				 << endl << endl << endl << endl << endl << endl << endl << endl << endl;
-			SetConsoleTextAttribute(hConsole, 7);
+			SetConsoleTextAttribute(map.h_console, 7);
 			break;
 		}
 	}
