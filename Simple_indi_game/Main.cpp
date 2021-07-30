@@ -49,28 +49,6 @@ public:
 Artifact::Artifact(int number) : number(number) {}
 
 
-vector<vector<char>> Map::Read_file(ifstream& in_file) {                      //reading input file and create gaming map
-
-	char symbol;
-	vector<vector<char>> DRP;
-		in_file >> map.length;
-		in_file >> map.height;
-		vector<char> string;
-
-		symbol = in_file.get();                                               //skip '\n'
-		for (int j = 0; j < map.height; j++) {
-			for (int i = 0; i < map.length; i++) {
-				symbol = in_file.get();
-				string.push_back(symbol);
-			}
-			symbol = in_file.get();                                           //skip '\n' in end string
-			DRP.push_back(string);
-			string.clear();
-		}
-	in_file.close();
-	return DRP;
-}
-
 void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
 	int temp_x = player.x_pos;
 	int temp_y = player.y_pos;
@@ -117,6 +95,28 @@ void Artifact::create(vector<vector<char>>& DRP) {
 		}
 	}
 } 
+
+vector<vector<char>> Map::Read_file(ifstream& in_file) {                      //reading input file and create gaming map
+
+	char symbol;
+	vector<vector<char>> DRP;
+	in_file >> map.length;
+	in_file >> map.height;
+	vector<char> string;
+
+	symbol = in_file.get();                                               //skip '\n'
+	for (int j = 0; j < map.height; j++) {
+		for (int i = 0; i < map.length; i++) {
+			symbol = in_file.get();
+			string.push_back(symbol);
+		}
+		symbol = in_file.get();                                           //skip '\n' in end string
+		DRP.push_back(string);
+		string.clear();
+	}
+	in_file.close();
+	return DRP;
+}
 
 void Map::out_map(vector<vector<char>> DRP) {
 	h_console = GetStdHandle(STD_OUTPUT_HANDLE);
