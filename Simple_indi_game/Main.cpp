@@ -45,6 +45,7 @@ public:
 
 	void create(vector<vector<char>>& DRP);
 	Artifact(int number);	
+	~Artifact() {};
 };
 Artifact::Artifact(int number) : number(number) {}
 vector<Artifact*> artifacts;
@@ -120,6 +121,7 @@ void Artifact::create(vector<vector<char>>& DRP) {
 
 void Map::out_map(vector<vector<char>> DRP) {							
 	for (int j = 0; j < map.height; j++) {
+		cout <<"                                      ";
 		for (int i = 0; i < map.length; i++) {
 			switch (DRP[j][i])
 			{
@@ -216,8 +218,7 @@ int main() {
 		for (int i = 0; i < artifacts.size(); i++) {
 			if (player.x_pos == artifacts[i]->x_pos && player.y_pos == artifacts[i]->y_pos) {
 				counter_artifacts++;
-				artifacts[i]->x_pos = -10;
-				artifacts[i]->y_pos = -10;
+				delete artifacts[i];
 			}
 		}
 
@@ -230,8 +231,11 @@ int main() {
 		}
 
 		if (player.x_pos == map.exit_x_pos && player.y_pos == map.exit_y_pos) {
-			cout << endl << endl << endl << endl << endl << endl << setw(59) << "YOU WIN!"
+			hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+			SetConsoleTextAttribute(hConsole, 5);
+			cout << endl << endl << endl << endl << endl << endl << setw(62) << "YOU WIN!"
 				 << endl << endl << endl << endl << endl << endl << endl << endl << endl;
+			SetConsoleTextAttribute(hConsole, 7);
 			break;
 		}
 	}
