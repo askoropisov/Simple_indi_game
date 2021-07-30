@@ -12,10 +12,13 @@ class Map {
 public:
 	int length;
 	int height;
-	int exit_x_pos;
-	int exit_y_pos;
-	vector<vector<char>> Read_file(ifstream& in_file);                   //reading file and return DRP[][]
+	int exit_x_pos = -10;
+	int exit_y_pos = -10;
+	char barier_target = '#';
+	char void_target = '.';
+	vector<vector<char>> DRP;
 
+	vector<vector<char>> Read_file(ifstream& in_file);                   //reading file and return DRP[][]
 	void out_map(vector<vector<char>> DRP);
 	void create_exit(vector<vector<char>>& DRP);
 } map;
@@ -24,10 +27,10 @@ class Player {
 public:
 	int x_pos = 0;
 	int y_pos = 0;
+	char target = 'P';
+
 	void movement(vector<vector<char>>& DRP, int key, int trash);
-
 } player;
-
 
 
 class Artifact {
@@ -59,7 +62,7 @@ vector<vector<char>> Map::Read_file(ifstream& in_file) {                  //read
 		DRP.push_back(string);
 		string.clear();
 	}
-	
+	in_file.close();
 	return DRP;
 }
 
@@ -68,28 +71,30 @@ void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
 	int temp_y = player.y_pos;
 	switch (key) {
 	case 72:
-		if (player.x_pos > 0 && DRP[player.x_pos-1][player.y_pos] != '#') {
+		if (player.x_pos > 0 && DRP[player.x_pos-1][player.y_pos] != map.barier_target) {
 			player.x_pos -= 1;
 		}
 		break;
 	case 80:
-		if (player.x_pos < map.height - 1 && DRP[player.x_pos + 1][player.y_pos] != '#') {
+		if (player.x_pos < map.height - 1 && DRP[player.x_pos + 1][player.y_pos] != map.barier_target) {
 			player.x_pos += 1;
 		}
 		break;
 	case 75:
-		if (player.y_pos > 0 && DRP[player.x_pos][player.y_pos-1] != '#') {
+		if (player.y_pos > 0 && DRP[player.x_pos][player.y_pos-1] != map.barier_target) {
 			player.y_pos -= 1;
 		}
 		break;
 	case 77:
-		if (player.y_pos < map.length - 1 && DRP[player.x_pos][player.y_pos + 1] != '#') {
+		if (player.y_pos < map.length - 1 && DRP[player.x_pos][player.y_pos + 1] != map.barier_target) {
 			player.y_pos += 1;
 		}
 		break;
+	default:
+		break;
 	}
-	DRP[temp_x][temp_y] = '.';
-	DRP[player.x_pos][player.y_pos] = 'P';
+	DRP[temp_x][temp_y] = map.void_target;
+	DRP[player.x_pos][player.y_pos] = player.target;
 }
 
 void Artifact::create(vector<vector<char>>& DRP) {	
@@ -99,7 +104,7 @@ void Artifact::create(vector<vector<char>>& DRP) {
 	while (counter < 1) {
 		temp_x = rand() % map.height;
 		temp_y = rand() % map.length;
-		if (DRP[temp_x][temp_y] == '.') {
+		if (DRP[temp_x][temp_y] == map.void_target && DRP[temp_x][temp_y] != DRP[0][0]) {
 			x_pos = temp_x;
 			y_pos = temp_y;
 			DRP[x_pos][y_pos] = '+';
@@ -125,7 +130,7 @@ void Map::create_exit(vector<vector<char>>& DRP) {
 	while (counter < 1) {
 		temp_x = rand() % map.height;
 		temp_y = rand() % map.length;
-		if (DRP[temp_x][temp_y] == '#') {
+		if (DRP[temp_x][temp_y] == map.barier_target) {
 			map.exit_x_pos = temp_x;
 			map.exit_y_pos = temp_y;
 			DRP[exit_x_pos][exit_y_pos] = 'E';
@@ -134,24 +139,31 @@ void Map::create_exit(vector<vector<char>>& DRP) {
 	}
 }
 
-int main() {
-	vector<vector<char>> DRP_symbol = map.Read_file(in_file);
-	int counter_artifacts = 0;
 
-	DRP_symbol[player.x_pos][player.y_pos] = 'P';                                   //set Player 												
-	map.out_map(DRP_symbol);
+int main() {
+	int counter_artifacts = 0;
+	if (!in_file.is_open()) {
+		cout << "The file cannot be opened" << endl;
+		return EXIT_FAILURE;
+	}
+	else {
+		map.DRP = map.Read_file(in_file);
+	}
+
+	map.DRP[player.x_pos][player.y_pos] = player.target;                                      //set Player 												
+	map.out_map(map.DRP);
 
 	for (int i = 0; i < 3; i++) {                                                   //create 3 object artifact
 		Artifact* art = new Artifact(i);
 		artifacts.push_back(art);
 
-		art->create(DRP_symbol);
+		art->create(map.DRP);
 	}
-	map.out_map(DRP_symbol);
+	map.out_map(map.DRP);
 
 	while (true) {
-		
-		player.movement(DRP_symbol, _getch(), _getch());                             //second _getch for for the special feature of arrow processing
+
+		player.movement(map.DRP, _getch(), _getch());                                //second _getch for for the special feature of arrow processing
 		for (int i = 0; i < artifacts.size(); i++) {
 			if (player.x_pos == artifacts[i]->x_pos && player.y_pos == artifacts[i]->y_pos) {
 				counter_artifacts++;
@@ -160,11 +172,11 @@ int main() {
 			}
 		}
 
-		map.out_map(DRP_symbol);
+		map.out_map(map.DRP);
 
 		if (counter_artifacts == 3) {
-			map.create_exit(DRP_symbol);
-			map.out_map(DRP_symbol);
+			map.create_exit(map.DRP);
+			map.out_map(map.DRP);
 			counter_artifacts = 0;
 		}
 
@@ -174,10 +186,6 @@ int main() {
 			break;
 		}
 	}
-	
-	
-	
-
-	
+	return 0;
 }
 
