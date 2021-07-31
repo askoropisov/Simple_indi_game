@@ -3,6 +3,7 @@
 #include <vector>
 #include <iomanip>
 #include <conio.h>
+#include <thread>
 #include <Windows.h>
 #include <stdio.h>
 
@@ -56,25 +57,25 @@ void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
 	case 72:
 		if (player.x_pos > 0 && DRP[player.x_pos-1][player.y_pos] != map.barier_target) {
 			player.x_pos -= 1;
-			Beep(5000, 50);
+			//Beep(5000, 50);
 		}
 		break;
 	case 80:
 		if (player.x_pos < map.height - 1 && DRP[player.x_pos + 1][player.y_pos] != map.barier_target) {
 			player.x_pos += 1;
-			Beep(5000, 50);
+			//Beep(5000, 50);
 		}
 		break;
 	case 75:
 		if (player.y_pos > 0 && DRP[player.x_pos][player.y_pos-1] != map.barier_target) {
 			player.y_pos -= 1;
-			Beep(5000, 50);
+			//Beep(5000, 50);
 		}
 		break;
 	case 77:
 		if (player.y_pos < map.length - 1 && DRP[player.x_pos][player.y_pos + 1] != map.barier_target) {
 			player.y_pos += 1;
-			Beep(5000, 50);
+			//Beep(5000, 50);
 		}
 		break;
 	default:
@@ -185,9 +186,61 @@ void Map::create_exit(vector<vector<char>>& DRP) {
 	}
 }
 
+void simple_music() {
+	while (true) {
+		Beep(784, 150);
+		Sleep(300);
+		Beep(784, 150);
+		Sleep(300);
+		Beep(932, 150);
+		Sleep(150);
+		Beep(1047, 150);
+		Sleep(150);
+		Beep(784, 150);
+		Sleep(300);
+		Beep(784, 150);
+		Sleep(300);
+		Beep(699, 150);
+		Sleep(150);
+		Beep(740, 150);
+		Sleep(150);
+		Beep(784, 150);
+		Sleep(300);
+		Beep(784, 150);
+		Sleep(300);
+		Beep(932, 150);
+		Sleep(150);
+		Beep(1047, 150);
+		Sleep(150);
+		Beep(784, 150);
+		Sleep(300);
+		Beep(784, 150);
+		Sleep(300);
+		Beep(699, 150);
+		Sleep(150);
+		Beep(740, 150);
+		Sleep(150);
+		Beep(932, 150);
+		Beep(784, 150);
+		Beep(587, 1200);
+		Sleep(75);
+		Beep(932, 150);
+		Beep(784, 150);
+		Beep(554, 1200);
+		Sleep(75);
+		Beep(932, 150);
+		Beep(784, 150);
+		Beep(523, 1200);
+		Sleep(150);
+		Beep(466, 150);
+		Beep(523, 150);
+	}
+}
+
 
 int main() {
 
+	thread music(simple_music);
 	ifstream in_file("input_medium.txt");
 	vector<Artifact*> artifacts;
 	int counter_artifacts = 0;
@@ -220,7 +273,7 @@ int main() {
 		player.movement(map.DRP, _getch(), _getch());                                          //second _getch for for the special feature of arrow processing
 		for (int i = 0; i < artifacts.size(); i++) {
 			if (player.x_pos == artifacts[i]->x_pos && player.y_pos == artifacts[i]->y_pos) {
-				Beep(200, 60);
+				//Beep(250, 20);
 				counter_artifacts++;
 				delete artifacts[i];
 			}
@@ -235,6 +288,8 @@ int main() {
 		}
 
 		if (player.x_pos == map.exit_x_pos && player.y_pos == map.exit_y_pos) {
+			music.detach();
+
 			Beep(659.26, 200);
 			Beep(659.26, 200);
 			Sleep(200);
@@ -246,10 +301,12 @@ int main() {
 			Beep(783.98, 200);
 			Sleep(400);
 			Beep(391.99, 200);
+
 			SetConsoleTextAttribute(map.h_console, 5);
 			cout << endl << endl << endl << endl << endl << endl << setw(62) << "YOU WIN!"
-				 << endl << endl << endl << endl << endl << endl << endl << endl << endl;
+				<< endl << endl << endl << endl << endl << endl << endl << endl << endl;
 			SetConsoleTextAttribute(map.h_console, 7);
+
 			break;
 		}
 	}
