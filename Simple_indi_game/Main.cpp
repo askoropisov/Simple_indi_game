@@ -56,21 +56,25 @@ void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
 	case 72:
 		if (player.x_pos > 0 && DRP[player.x_pos-1][player.y_pos] != map.barier_target) {
 			player.x_pos -= 1;
+			Beep(5000, 50);
 		}
 		break;
 	case 80:
 		if (player.x_pos < map.height - 1 && DRP[player.x_pos + 1][player.y_pos] != map.barier_target) {
 			player.x_pos += 1;
+			Beep(5000, 50);
 		}
 		break;
 	case 75:
 		if (player.y_pos > 0 && DRP[player.x_pos][player.y_pos-1] != map.barier_target) {
 			player.y_pos -= 1;
+			Beep(5000, 50);
 		}
 		break;
 	case 77:
 		if (player.y_pos < map.length - 1 && DRP[player.x_pos][player.y_pos + 1] != map.barier_target) {
 			player.y_pos += 1;
+			Beep(5000, 50);
 		}
 		break;
 	default:
@@ -216,6 +220,7 @@ int main() {
 		player.movement(map.DRP, _getch(), _getch());                                          //second _getch for for the special feature of arrow processing
 		for (int i = 0; i < artifacts.size(); i++) {
 			if (player.x_pos == artifacts[i]->x_pos && player.y_pos == artifacts[i]->y_pos) {
+				Beep(200, 60);
 				counter_artifacts++;
 				delete artifacts[i];
 			}
@@ -230,6 +235,17 @@ int main() {
 		}
 
 		if (player.x_pos == map.exit_x_pos && player.y_pos == map.exit_y_pos) {
+			Beep(659.26, 200);
+			Beep(659.26, 200);
+			Sleep(200);
+			Beep(659.26, 200);
+			Sleep(100);
+			Beep(523.26, 200);
+			Beep(659.26, 200);
+			Sleep(200);
+			Beep(783.98, 200);
+			Sleep(400);
+			Beep(391.99, 200);
 			SetConsoleTextAttribute(map.h_console, 5);
 			cout << endl << endl << endl << endl << endl << endl << setw(62) << "YOU WIN!"
 				 << endl << endl << endl << endl << endl << endl << endl << endl << endl;
