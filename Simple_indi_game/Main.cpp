@@ -15,6 +15,8 @@ public:
 	int y_pos = 0;
 
 	void movement(vector<vector<char>>& DRP, int key, int trash);
+
+	~Player() {};
 };
 
 class Artifact {
@@ -63,11 +65,14 @@ public:
 	int exit_y_pos = -10;
 	vector<vector<char>> DRP;
 
-	bool create(ifstream& in_file, Player player, vector<Artifact*>& artifacts);
+	bool create(Player player, vector<Artifact*>& artifacts);
+	void victory();
 	void read_file(ifstream& in_file);                       //reading file and return DRP[][]
 	void print(vector<vector<char>> DRP);
 	void create_exit(vector<vector<char>>& DRP);
 	void color_symbol(vector<vector<char>>& DRP, int color, int i, int j);
+
+	~Map() {};
 } map;
 
 
@@ -198,34 +203,6 @@ void Map::create_exit(vector<vector<char>>& DRP) {
 	}
 }
 
-bool Map::create(ifstream& in_file, Player player, vector<Artifact*>& artifacts) {
-
-	int counter_artifacts = 0;
-
-	if (!in_file.is_open()) {
-		cout << "The file cannot be opened" << endl;
-		return EXIT_FAILURE;
-	}
-	else if (in_file.peek() == EOF) {
-		cout << "File empty" << endl;
-		return EXIT_FAILURE;
-	}
-	else {
-		map.read_file(in_file);
-	}
-
-	this->DRP[player.x_pos][player.y_pos] = this->player;                                      //set Player
-	this->print(this->DRP);
-
-	for (int i = 0; i < 3; i++) {                                                             //create 3 object artifact
-		Artifact* art = new Artifact(i);
-		artifacts.push_back(art);
-
-		art->create(this->DRP);
-	}
-	this->print(this->DRP);
-}
-
 void simple_music_back() {
 	while (true) {
 		Beep(784, 150);
@@ -277,6 +254,7 @@ void simple_music_back() {
 	}
 }
 void simple_music_win() {
+	Sleep(300);
 	Beep(659.26, 200);
 	Beep(659.26, 200);
 	Sleep(200);
@@ -290,29 +268,48 @@ void simple_music_win() {
 	Beep(391.99, 200);
 }
 
-void victory() {
+void Map::victory() {
 	simple_music_win();
 
-	SetConsoleTextAttribute(map.h_console, map.purple);
+	SetConsoleTextAttribute(this->h_console, this->purple);
 	cout << endl << endl << endl << endl << endl << endl << setw(62) << "YOU WIN!"
 		<< endl << endl << endl << endl << endl << endl << endl << endl << endl;
-	SetConsoleTextAttribute(map.h_console, map.white);
+	SetConsoleTextAttribute(this->h_console, this->white);
+}
+
+bool Map::create(Player player, vector<Artifact*>& artifacts) {
+	ifstream in_file("input_medium.txt");
+	int counter_artifacts = 0;
+
+	if (!in_file.is_open()) {
+		cout << "The file cannot be opened" << endl;
+		return EXIT_FAILURE;
+	}
+	else if (in_file.peek() == EOF) {
+		cout << "File empty" << endl;
+		return EXIT_FAILURE;
+	}
+	else {
+		map.read_file(in_file);
+	}
+
+	this->DRP[player.x_pos][player.y_pos] = this->player;                                      //set Player
+	this->print(this->DRP);
+
+	for (int i = 0; i < 3; i++) {                                                             //create 3 object artifact
+		Artifact* art = new Artifact(i);
+		artifacts.push_back(art);
+
+		art->create(this->DRP);
+	}
+	this->print(this->DRP);
 }
 
 
-int main() {
 
-	//Map map;
-	Player player;
+void processing_key(Player player, vector<Artifact*> artifacts) {
 	thread music(simple_music_back);
-
-	ifstream in_file("input_medium.txt");
-	vector<Artifact*> artifacts;
-
-	map.create(in_file, player, artifacts);
 	int counter_artifacts = 0;
-
-
 	while (true) {
 		player.movement(map.DRP, _getch(), _getch());                                          //second _getch for for the special feature of arrow processing
 		for (int i = 0; i < artifacts.size(); i++) {
@@ -331,11 +328,24 @@ int main() {
 		}
 
 		if (player.x_pos == map.exit_x_pos && player.y_pos == map.exit_y_pos) {
+			player.~Player();
 			music.detach();
-			victory();
+			map.victory();
+			map.~Map();
 			break;
 		}
 	}
+}
+
+
+int main() {
+
+	Player player;
+	vector<Artifact*> artifacts;
+
+	map.create(player, artifacts);
+	processing_key(player, artifacts);
+
 	return 0;
 }
 
