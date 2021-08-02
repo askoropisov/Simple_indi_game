@@ -65,8 +65,9 @@ public:
 	HANDLE h_console;
 	int length;
 	int height;
-	int exit_x_pos = -10;
-	int exit_y_pos = -10;
+	bool exit_open = false;
+	int exit_x_pos = 0;
+	int exit_y_pos = 0;
 	vector<vector<char>> DRP;
 
 	bool create(Player player, vector<Artifact*>& artifacts);
@@ -200,6 +201,7 @@ void Map::create_exit(vector<vector<char>>& DRP) {
 		temp_x = rand() % this->height;
 		temp_y = rand() % this->length;
 		if (DRP[temp_x][temp_y] == this->barier) {
+			this->exit_open=true;
 			this->exit_x_pos = temp_x;
 			this->exit_y_pos = temp_y;
 			DRP[exit_x_pos][exit_y_pos] = symbol::exit;
@@ -331,7 +333,7 @@ void Map::processing_key_user(Player player, vector<Artifact*> artifacts) {
 			counter_artifacts = 0;
 		}
 
-		if (player.x_pos == this->exit_x_pos && player.y_pos == this->exit_y_pos) {
+		if (player.x_pos == this->exit_x_pos && player.y_pos == this->exit_y_pos && this->exit_open == true) {
 			player.~Player();
 			music.detach();
 			this->victory();
