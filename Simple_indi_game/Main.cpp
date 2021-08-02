@@ -32,11 +32,11 @@ Artifact::Artifact(int number) : number(number) {}
 class Map {
 public:
 	enum symbol {
-		barier='#',
-		void_cell='.',
-		player='P',
-		artifact='@',
-		exit='E',
+		barier = '#',
+		void_cell = '.',
+		player = 'P',
+		artifact = '@',
+		exit = 'E',
 	};
 	enum color {
 		black,
@@ -76,7 +76,7 @@ void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
 	int temp_y = this->y_pos;
 	switch (key) {
 	case 72:
-		if (this->x_pos > 0 && DRP[this->x_pos-1][this->y_pos] != map.barier) {
+		if (this->x_pos > 0 && DRP[this->x_pos - 1][this->y_pos] != map.barier) {
 			this->x_pos -= 1;
 		}
 		break;
@@ -86,7 +86,7 @@ void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
 		}
 		break;
 	case 75:
-		if (this->y_pos > 0 && DRP[this->x_pos][this->y_pos-1] != map.barier) {
+		if (this->y_pos > 0 && DRP[this->x_pos][this->y_pos - 1] != map.barier) {
 			this->y_pos -= 1;
 		}
 		break;
@@ -116,10 +116,10 @@ void Artifact::create(vector<vector<char>>& DRP) {
 			counter++;
 		}
 	}
-} 
+}
 
 void Map::read_file(ifstream& in_file) {                      //reading input file and create gaming map
-	
+
 	char symbol;
 	in_file >> this->length;
 	in_file >> this->height;
@@ -148,7 +148,7 @@ void Map::color_symbol(vector<vector<char>>& DRP, int color, int i, int j) {
 void Map::print(vector<vector<char>> DRP) {
 
 	for (int j = 0; j < this->height; j++) {
-		cout <<"                                      ";
+		cout << "                                      ";
 		for (int i = 0; i < this->length; i++) {
 			switch (DRP[j][i])
 			{
