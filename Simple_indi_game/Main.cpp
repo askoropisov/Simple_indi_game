@@ -9,12 +9,15 @@
 
 using namespace std;
 
+class Map;
+class Artifact;
+
 class Player {
 public:
 	int x_pos = 0;
 	int y_pos = 0;
 
-	void movement(vector<vector<char>>& DRP, int key, int trash);
+	void movement(vector<vector<char>>& DRP, int key, int trash, Map map);
 
 	~Player() {};
 };
@@ -25,7 +28,8 @@ public:
 	int x_pos = 0;
 	int y_pos = 0;
 
-	void create(vector<vector<char>>& DRP);
+	void create(vector<vector<char>>& DRP, Map map);
+
 	Artifact(int number);
 	~Artifact() {};
 };
@@ -67,16 +71,17 @@ public:
 
 	bool create(Player player, vector<Artifact*>& artifacts);
 	void victory();
-	void read_file(ifstream& in_file);                       //reading file and return DRP[][]
+	void processing_key_user(Player player, vector<Artifact*> artifacts);
+	void read_file(ifstream& in_file);
 	void print(vector<vector<char>> DRP);
 	void create_exit(vector<vector<char>>& DRP);
 	void color_symbol(vector<vector<char>>& DRP, int color, int i, int j);
 
 	~Map() {};
-} map;
+};
 
 
-void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
+void Player::movement(vector<vector<char>>& DRP, int key, int trash, Map map) {
 	int temp_x = this->x_pos;
 	int temp_y = this->y_pos;
 	switch (key) {
@@ -107,7 +112,7 @@ void Player::movement(vector<vector<char>>& DRP, int key, int trash) {
 	DRP[this->x_pos][this->y_pos] = map.player;
 }
 
-void Artifact::create(vector<vector<char>>& DRP) {
+void Artifact::create(vector<vector<char>>& DRP, Map map) {
 	int temp_x, temp_y, counter = 0;
 	srand(time(NULL));
 
@@ -279,7 +284,6 @@ void Map::victory() {
 
 bool Map::create(Player player, vector<Artifact*>& artifacts) {
 	ifstream in_file("input_medium.txt");
-	int counter_artifacts = 0;
 
 	if (!in_file.is_open()) {
 		cout << "The file cannot be opened" << endl;
@@ -290,7 +294,7 @@ bool Map::create(Player player, vector<Artifact*>& artifacts) {
 		return EXIT_FAILURE;
 	}
 	else {
-		map.read_file(in_file);
+		this->read_file(in_file);
 	}
 
 	this->DRP[player.x_pos][player.y_pos] = this->player;                                      //set Player
@@ -300,18 +304,18 @@ bool Map::create(Player player, vector<Artifact*>& artifacts) {
 		Artifact* art = new Artifact(i);
 		artifacts.push_back(art);
 
-		art->create(this->DRP);
+		art->create(this->DRP, *this);
 	}
 	this->print(this->DRP);
 }
 
 
-
-void processing_key(Player player, vector<Artifact*> artifacts) {
+void Map::processing_key_user(Player player, vector<Artifact*> artifacts) {
 	thread music(simple_music_back);
 	int counter_artifacts = 0;
+
 	while (true) {
-		player.movement(map.DRP, _getch(), _getch());                                          //second _getch for for the special feature of arrow processing
+		player.movement(this->DRP, _getch(), _getch(), *this);                                          //second _getch for for the special feature of arrow processing
 		for (int i = 0; i < artifacts.size(); i++) {
 			if (player.x_pos == artifacts[i]->x_pos && player.y_pos == artifacts[i]->y_pos) {
 				counter_artifacts++;
@@ -319,19 +323,19 @@ void processing_key(Player player, vector<Artifact*> artifacts) {
 			}
 		}
 
-		map.print(map.DRP);
+		this->print(this->DRP);
 
 		if (counter_artifacts == 3) {
-			map.create_exit(map.DRP);
-			map.print(map.DRP);
+			this->create_exit(this->DRP);
+			this->print(this->DRP);
 			counter_artifacts = 0;
 		}
 
-		if (player.x_pos == map.exit_x_pos && player.y_pos == map.exit_y_pos) {
+		if (player.x_pos == this->exit_x_pos && player.y_pos == this->exit_y_pos) {
 			player.~Player();
 			music.detach();
-			map.victory();
-			map.~Map();
+			this->victory();
+			this->~Map();
 			break;
 		}
 	}
@@ -342,9 +346,10 @@ int main() {
 
 	Player player;
 	vector<Artifact*> artifacts;
+	Map map;
 
 	map.create(player, artifacts);
-	processing_key(player, artifacts);
+	map.processing_key_user(player, artifacts);
 
 	return 0;
 }
