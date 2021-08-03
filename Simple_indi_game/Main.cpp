@@ -83,6 +83,7 @@ public:
 
 
 void Player::movement(vector<vector<char>>& DRP, int key, int trash, Map map) {
+
 	int temp_x = this->x_pos;
 	int temp_y = this->y_pos;
 	switch (key) {
@@ -346,13 +347,13 @@ void Map::processing_key_user(Player player, vector<Artifact*> artifacts) {
 
 int main() {
 
-	Player player;
-	vector<Artifact*> artifacts;
-	Map map;
+    Player player;
+    vector<Artifact*> artifacts;
+    Map map;
 
-	map.create(player, artifacts);
-	map.processing_key_user(player, artifacts);
+    map.create(player, artifacts);
+    map.processing_key_user(player, artifacts);
 
-	return 0;
+    return 0;
 }
 
