@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <fstream>
 #include <vector>
 #include <iomanip>
@@ -158,7 +158,9 @@ void Map::color_symbol(vector<vector<char>>& DRP, int color, int i, int j) {
 }
 
 void Map::print(vector<vector<char>> DRP) {
-
+    
+    system("cls");
+    cout << endl << endl << endl << endl << endl << endl;
 	for (int j = 0; j < this->height; j++) {
 		cout << "                                      ";
 		for (int i = 0; i < this->length; i++) {
@@ -276,9 +278,10 @@ void simple_music_win() {
 	Beep(391.99, 200);
 }
 
+
+
 void Map::victory() {
 	simple_music_win();
-
 	SetConsoleTextAttribute(this->h_console, this->purple);
 	cout << endl << endl << endl << endl << endl << endl << setw(62) << "YOU WIN!"
 		<< endl << endl << endl << endl << endl << endl << endl << endl << endl;
