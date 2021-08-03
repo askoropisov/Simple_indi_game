@@ -72,6 +72,7 @@ public:
 
 	bool create(Player player, vector<Artifact*>& artifacts);
 	void victory();
+    void rendering(int x, int y);
 	void processing_key_user(Player player, vector<Artifact*> artifacts);
 	void read_file(ifstream& in_file);
 	void print(vector<vector<char>> DRP);
@@ -157,9 +158,17 @@ void Map::color_symbol(vector<vector<char>>& DRP, int color, int i, int j) {
 	SetConsoleTextAttribute(h_console, color::white);
 }
 
+void Map::rendering(int x, int y)
+{
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+};
+
 void Map::print(vector<vector<char>> DRP) {
-    
-    system("cls");
+    this->rendering(0, 0);
+
     cout << endl << endl << endl << endl << endl << endl;
 	for (int j = 0; j < this->height; j++) {
 		cout << "                                      ";
